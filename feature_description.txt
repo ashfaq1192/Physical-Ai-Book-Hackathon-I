@@ -1,0 +1,7 @@
+Implement Authentication and Personalization using Better-Auth.
+1. Install `better-auth` in `book-app`.
+2. Create a `lib/auth-client.ts` for the frontend auth client.
+3. Create a `src/pages/signup.tsx` page.
+4. In the Signup form, ask for Email, Password, and a **Dropdown for Skill Level** (Beginner, Intermediate, Advanced).
+5. Store this Skill Level in the user's session/metadata.
+6. Update `ChatWidget.tsx` to send the user's Skill Level to the backend along with their message.

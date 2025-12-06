@@ -1,0 +1,29 @@
+# Gitignore for Docusaurus (Node.js/TypeScript) and FastAPI (Python) project
+
+# Node.js/TypeScript
+node_modules/
+dist/
+build/
+*.log
+.env*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+*.egg-info/
+
+# Universal
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
+
+# RAG Backend specific
+/rag-backend/.venv/
+rag-backend/.env
+/rag-backend/__pycache__/
