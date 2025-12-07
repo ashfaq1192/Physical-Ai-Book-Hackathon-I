@@ -38,7 +38,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = () => {
 
     try {
       // 2. Send Request to Backend
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+      const API_BASE_URL = 'https://ashfaq1192-physica-ai-chatbot.hf.space';
       const response = await fetch(`${API_BASE_URL}/chat`,{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
