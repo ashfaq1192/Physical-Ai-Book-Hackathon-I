@@ -38,7 +38,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = () => {
 
     try {
       // 2. Send Request to Backend
-      const API_BASE_URL = 'https://ashfaq1192-physica-ai-chatbot.hf.space';
+      // Use local backend in development, HF Space in production
+      const API_BASE_URL = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+        ? 'http://localhost:8000'
+        : 'https://ashfaq1192-physica-ai-chatbot.hf.space';
       const response = await fetch(`${API_BASE_URL}/chat`,{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
