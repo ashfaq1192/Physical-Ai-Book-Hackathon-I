@@ -1,6 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "Bash(pip show:*)",
+      "Bash(npx docusaurus:*)",
       "Bash(sp init:*)",
       "Bash(powershell -Command:*)",
       "Bash(chcp:*)",
