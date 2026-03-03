@@ -62,12 +62,13 @@ const ChatWidget: React.FC<ChatWidgetProps> = () => {
 
     } catch (error) {
       console.error('Chat Error:', error);
-      let errorMessage = 'Connection error. Please ensure the backend server (uvicorn) is running.';
+      let errorMessage = 'Connection error. Please try again later.';
       if (error instanceof TypeError) {
-        errorMessage = `Network Error: ${error.message}. Is the backend running and accessible at http://localhost:8000?`;
+        errorMessage = `Network Error: ${error.message}`;
       } else if (error instanceof Error) {
-        errorMessage = `Backend Error: ${error.message}`;
+        errorMessage = `Error: ${error.message}`;
       }
+      setMessages((prev) => [...prev, `Bot: ⚠️ ${errorMessage}`]);
     } finally {
       setLoading(false);
     }

@@ -15,17 +15,15 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://physical-ai-textbook.vercel.app',
   // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'Panaversity', // Usually your GitHub org/user name.
-  projectName: 'hackathon_nov30', // Usually your repo name.
+  organizationName: 'ashfaq1192',
+  projectName: 'book-app-frontend',
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -41,26 +39,10 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/ashfaq1192/book-app-frontend/tree/main/book-app/',
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -75,15 +57,26 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Home',
+      title: 'Physical AI & Humanoid Robotics',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Panaversity Logo',
         src: 'img/logo.svg',
       },
       items: [
         {
+          type: 'docSidebar',
+          sidebarId: 'tutorialSidebar',
+          position: 'left',
+          label: 'Textbook',
+        },
+        {
           to: '/signup',
           label: 'Sign Up',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/ashfaq1192/book-app-frontend',
+          label: 'GitHub',
           position: 'right',
         },
       ],
@@ -92,19 +85,36 @@ const config: Config = {
       style: 'dark',
       links: [
         {
+          title: 'Textbook',
+          items: [
+            {
+              label: 'Module 1: ROS 2',
+              to: '/docs/module-1/intro',
+            },
+            {
+              label: 'Module 2: Gazebo & Unity',
+              to: '/docs/module-2/intro',
+            },
+            {
+              label: 'Module 3: NVIDIA Isaac',
+              to: '/docs/module-3/isaac-intro',
+            },
+            {
+              label: 'Module 4: VLA Models',
+              to: '/docs/module-4/vla-intro',
+            },
+          ],
+        },
+        {
           title: 'Community',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'Panaversity',
+              href: 'https://panaversity.org',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'GitHub',
+              href: 'https://github.com/ashfaq1192/book-app-frontend',
             },
           ],
         },

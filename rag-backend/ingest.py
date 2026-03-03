@@ -1,134 +1,132 @@
+"""
+Ingest Docusaurus markdown docs into Qdrant.
+
+Usage (from the repo root):
+    python rag-backend/ingest.py
+"""
 import os
 import asyncio
 import time
 from pathlib import Path
 from dotenv import load_dotenv
-from openai import AsyncOpenAI, APIConnectionError, RateLimitError
+from openai import AsyncOpenAI
 from qdrant_client import QdrantClient, models
-from qdrant_client.http.exceptions import UnexpectedResponse
 
 load_dotenv()
 
-# Initialize OpenAI client
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY is not set in environment variables.")
+    raise ValueError("GEMINI_API_KEY is not set. Please create a .env file.")
+
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+if not QDRANT_URL:
+    raise ValueError("QDRANT_URL is not set. Please create a .env file.")
 
 openai_client = AsyncOpenAI(
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
     api_key=GEMINI_API_KEY,
 )
 
-# Initialize Qdrant client
-# Initialize Qdrant client (Corrected for Cloud)
-qdrant_client = QdrantClient(
-    url=os.getenv("QDRANT_URL"),
-    api_key=os.getenv("QDRANT_API_KEY"),
-) 
-COLLECTION_NAME = "docusaurus_docs" # This must match the collection name in main.py
+qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
-async def get_embeddings(text: str):
-    try:
-        response = await openai_client.embeddings.create(
-            model="text-embedding-004",
-            input=text
-        )
-        return response.data[0].embedding
-    except (APIConnectionError, RateLimitError) as e:
-        print(f"OpenAI API error during embedding generation: {e}")
-        raise
-    except Exception as e:
-        print(f"An unexpected error occurred during embedding generation: {e}")
-        raise
+COLLECTION_NAME = "docusaurus_docs"
+VECTOR_SIZE = 768  # text-embedding-004 with dimensions=768
 
-def get_markdown_files(docs_path: str):
-    markdown_files = []
-    try:
-        for root, _, files in os.walk(docs_path):
-            for file in files:
-                if file.endswith(".md"):
-                    file_path = Path(root) / file
-                    markdown_files.append(str(file_path))
-    except Exception as e:
-        print(f"Error walking through documentation directory: {e}")
-        raise
-    return markdown_files
 
-def read_markdown_content(file_path: str):
+async def get_embedding(text: str) -> list[float]:
+    """Generate a 768-dimensional embedding for text."""
+    response = await openai_client.embeddings.create(
+        model="text-embedding-004",
+        input=text,
+        dimensions=VECTOR_SIZE,
+    )
+    return response.data[0].embedding
+
+
+def get_markdown_files(docs_path: str) -> list[str]:
+    """Recursively collect all .md files under docs_path."""
+    files = []
+    for root, _, filenames in os.walk(docs_path):
+        for filename in filenames:
+            if filename.endswith(".md") or filename.endswith(".mdx"):
+                files.append(str(Path(root) / filename))
+    return files
+
+
+def read_document(file_path: str) -> dict:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
         return {"file_path": file_path, "content": content}
-    except FileNotFoundError:
-        print(f"File not found: {file_path}")
+    except Exception as e:
+        print(f"  ⚠️  Could not read {file_path}: {e}")
         return {"file_path": file_path, "content": ""}
-    except Exception as e:
-        print(f"Error reading file {file_path}: {e}")
-        raise
 
-def load_documents(docs_dir: str):
-    files = get_markdown_files(docs_dir)
-    documents = [read_markdown_content(file) for file in files]
-    return documents
 
-async def index_documents(documents: list[dict]):
-    # Determine the vector size from the embedding model. This assumes a consistent embedding size.
-    # For 'embedding-001', a common size is 768 or 1536. We'll use a placeholder and ideally
-    # get this dynamically or from configuration. For this example, let's assume 768.
-    vector_size = 768 # Placeholder: replace with actual embedding dimension
-
+async def rebuild_collection(documents: list[dict]):
+    """Drop and recreate the Qdrant collection, then upsert all documents."""
+    # Drop existing collection (ignore error if it doesn't exist)
     try:
-        # Create collection if it doesn't exist
-        qdrant_client.recreate_collection(
-            collection_name=COLLECTION_NAME,
-            vectors_config=models.VectorParams(size=vector_size, distance=models.Distance.COSINE),
-        )
-    except UnexpectedResponse as e:
-        print(f"Qdrant client error during collection creation: {e}")
-        raise
-    except Exception as e:
-        print(f"An unexpected error occurred during Qdrant collection creation: {e}")
-        raise
+        qdrant_client.delete_collection(COLLECTION_NAME)
+        print(f"  Dropped existing collection '{COLLECTION_NAME}'.")
+    except Exception:
+        pass
+
+    qdrant_client.create_collection(
+        collection_name=COLLECTION_NAME,
+        vectors_config=models.VectorParams(
+            size=VECTOR_SIZE, distance=models.Distance.COSINE
+        ),
+    )
+    print(f"  Created collection '{COLLECTION_NAME}' (dim={VECTOR_SIZE}, cosine).")
 
     points = []
-    for doc in documents:
+    for i, doc in enumerate(documents, 1):
+        if not doc["content"].strip():
+            continue
+        print(f"  [{i}/{len(documents)}] Embedding: {Path(doc['file_path']).name} …", end=" ")
         try:
-            # Generate embedding for the document content
-            await asyncio.sleep(2)
-            embedding = await get_embeddings(doc["content"])
+            # Rate-limit guard: Gemini free tier allows ~60 RPM
+            await asyncio.sleep(1.1)
+            embedding = await get_embedding(doc["content"])
+            point_id = abs(hash(doc["file_path"])) % (2 ** 31)
             points.append(
                 models.PointStruct(
-                    id=hash(doc["file_path"]) % (2**63 - 1), # Simple hash for ID
+                    id=point_id,
                     vector=embedding,
-                    payload={"file_path": doc["file_path"], "text": doc["content"]}
+                    payload={
+                        "file_path": doc["file_path"],
+                        "text": doc["content"],
+                    },
                 )
             )
+            print("✓")
         except Exception as e:
-            print(f"Error processing document {doc['file_path']}: {e}. Skipping this document.")
-            continue
+            print(f"✗  ({e})")
 
-    try:
-        # Batch insert points
+    if points:
         qdrant_client.upsert(
             collection_name=COLLECTION_NAME,
             wait=True,
-            points=points
+            points=points,
         )
-        print(f"Indexed {len(points)} documents into Qdrant collection '{COLLECTION_NAME}'.")
-    except UnexpectedResponse as e:
-        print(f"Qdrant client error during document upsertion: {e}")
-        raise
-    except Exception as e:
-        print(f"An unexpected error occurred during Qdrant document upsertion: {e}")
-        raise
+        print(f"\n✅ Indexed {len(points)} documents into '{COLLECTION_NAME}'.")
+    else:
+        print("⚠️  No documents were indexed.")
 
 
 if __name__ == "__main__":
-    DOCS_DIR = os.path.join(os.getcwd(), "book-app", "docs")
-    if os.path.exists(DOCS_DIR):
-        docs = load_documents(DOCS_DIR)
-        print(f"Loaded {len(docs)} documents.")
-        # Index documents
-        asyncio.run(index_documents(docs))
-    else:
-        print(f"Documentation directory not found: {DOCS_DIR}")
+    docs_dir = str(Path(__file__).parent.parent / "book-app" / "docs")
+    if not os.path.exists(docs_dir):
+        print(f"❌ Docs directory not found: {docs_dir}")
+        exit(1)
+
+    files = get_markdown_files(docs_dir)
+    print(f"📂 Found {len(files)} markdown files in {docs_dir}")
+
+    documents = [read_document(f) for f in files]
+    documents = [d for d in documents if d["content"].strip()]
+    print(f"📄 Loaded {len(documents)} non-empty documents.")
+
+    asyncio.run(rebuild_collection(documents))

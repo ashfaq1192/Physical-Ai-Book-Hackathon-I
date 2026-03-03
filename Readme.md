@@ -1,113 +1,76 @@
-# Project : Physical AI & Humanoid Robotics TextBook
+# Physical AI & Humanoid Robotics Textbook
 
-## Introduction
-This project is an open-source educational resource designed to introduce users to the exciting field of Physical AI. It covers fundamental concepts, practical applications, and advanced topics related to robotics, digital twins, and vision-language-action (VLA) models. The book is structured into modules, each focusing on a specific aspect of Physical AI, from foundational robotics concepts to cutting-edge AI integration. This entire project was accomplished using Spec-Driven Development (SDD), leveraging the Speck-kit Plus framework and the Claude Code CLI tool, powered by the Gemini API.
+An AI-native, interactive textbook for the Physical AI & Humanoid Robotics course by [Panaversity](https://panaversity.org).
 
-## Scope
-The scope of this project is to provide a comprehensive and accessible learning experience for individuals interested in Physical AI. It includes:
-- **Module 1: Robotics Nervous System:** Covers foundational robotics concepts, including ROS 2, URDF, and Gazebo.
-- **Module 2: Digital Twin Simulation:** Explores digital twin concepts, advanced simulation with Gazebo, and high-fidelity rendering with Unity.
-- **Module 3: AI Robot Brain (NVIDIA Isaac Sim):** Dives into NVIDIA Isaac Sim, synthetic data generation, and reinforcement learning for robotics.
-- **Module 4: Vision-Language-Action (VLA) Models:** Introduces VLA models, voice control, and cognitive planning for autonomous systems.
+## Live Demo
 
-## Learning Outcomes
-Upon completing this project, users will be able to:
-- Understand the core principles of Physical AI and its applications.
-- Develop basic to advanced robotic simulations using ROS 2, Gazebo, and Unity.
-- Utilize NVIDIA Isaac Sim for synthetic data generation and reinforcement learning in robotics.
-- Comprehend and implement Vision-Language-Action models for advanced robotic control.
-- Gain hands-on experience with industry-standard tools and frameworks in Physical AI.
-- Understand and apply Spec-Driven Development (SDD) methodologies.
-- Effectively utilize AI-powered development tools like Claude Code.
+- **Textbook (Vercel):** https://physical-ai-textbook.vercel.app
+- **RAG Chatbot API (HF Spaces):** https://ashfaq1192-physica-ai-chatbot.hf.space
 
-## Skills and Tools Used and Learned
-- **Claude Code (with Gemini API Key):** The interactive CLI tool used for project development and task execution.
-- **Quadrant Vector Database:** The platform used for RAG purpose (Facilitates in live interaction with contents of the book
-- **Speck-kit Plus:** The framework used for Spec-Driven Development.
-- **Git/GitHub:** For version control and collaboration.
-- **Markdown:** For documentation and content creation.
+## Project Structure
 
-## Project Walkthrough: How to Run the Project Locally
-
-This section will guide you through setting up and running the Physical AI Book project on your local machine.
-
-### Prerequisites
-Before you begin, ensure you have the following installed:
-- Git
-- Node.js and npm (for Docusaurus)
-- Python 3.8+ and pip
-- Docker (optional, for Qdrant)
-
-### 1. Clone the Repository
-First, clone the project repository from GitHub:
-
-```bash
-git clone https://github.com/ashfaq1192/hackathon-nov30.git
-cd hackathon-nov30
+```
+book-app-frontend/
+├── book-app/          # Docusaurus textbook (deployed to Vercel)
+│   ├── docs/          # Chapter content (Modules 1–4)
+│   ├── src/           # React components (ChatWidget, signup page)
+│   └── lib/           # Auth client
+└── rag-backend/       # FastAPI RAG chatbot (deployed to HF Spaces)
+    ├── main.py        # FastAPI app
+    ├── ingest.py      # Qdrant ingestion script
+    ├── Dockerfile     # HF Spaces deployment
+    └── requirements.txt
 ```
 
-### 2. Install Docusaurus Dependencies
-The book content is built using Docusaurus. Navigate to the `book-app` directory and install the dependencies:
+## Modules
+
+| Module | Topic |
+|--------|-------|
+| Module 1 | Robotic Nervous System (ROS 2) |
+| Module 2 | The Digital Twin (Gazebo & Unity) |
+| Module 3 | AI-Robot Brain (NVIDIA Isaac Sim) |
+| Module 4 | Vision-Language-Action (VLA) Models |
+
+## Local Development
+
+### Frontend (Docusaurus)
 
 ```bash
 cd book-app
 npm install
+npm start
 ```
 
-### 3. Run the Docusaurus Development Server
-You can now start the Docusaurus development server to view the book content locally:
+Open http://localhost:3000
+
+### Backend (FastAPI)
 
 ```bash
-npm run start
-```
-Open your browser to `http://localhost:3000` to see the book.
-
-### 4. Setting up the RAG Backend (Optional, for Chatbot Integration)
-If you want to enable the chatbot functionality (RAG backend), follow these steps.
-
-#### Create and Activate a Python Virtual Environment
-```bash
-# From the project root directory
-mkdir rag-backend
 cd rag-backend
-python -m venv .venv
-# On Windows
-.venv\Scripts\activate
-# On macOS/Linux
-source .venv/bin/activate
-```
-
-#### Install Python Dependencies
-```bash
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-```
-(Note: You will need to create `requirements.txt` with `fastapi`, `uvicorn`, `openai`, `qdrant-client`, `python-dotenv` if it doesn't exist.)
-
-#### Create a `.env` file
-In the `rag-backend` directory, create a `.env` file and add your Gemini API key:
-```
-GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+cp .env.example .env   # fill in your keys
+uvicorn main:app --reload --port 8000
 ```
 
-#### Run the Ingestion Script
-This script will index your documentation into Qdrant.
+### Ingest docs into Qdrant
+
 ```bash
+cd rag-backend
 python ingest.py
 ```
-(Note: You will need to create `ingest.py` to index `book-app/docs` into Qdrant if it doesn't exist.)
 
-#### Run the FastAPI Backend
-```bash
-uvicorn main:app --reload
-```
-(Note: You will need to create `main.py` with the FastAPI app if it doesn't exist.)
+## Environment Variables (backend)
 
-### 5. Docker for Qdrant (Optional)
-If you prefer to run Qdrant in Docker:
+| Variable | Description |
+|---|---|
+| `GEMINI_API_KEY` | Google Gemini API key (aistudio.google.com) |
+| `QDRANT_URL` | Qdrant Cloud cluster URL |
+| `QDRANT_API_KEY` | Qdrant Cloud API key |
 
-```bash
-docker pull qdrant/qdrant
-docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
-```
+## Tech Stack
 
-This `Readme.md` provides a comprehensive guide for anyone to understand, set up, and run the Physical AI & Humanoid Robotics Textbook Project.
+- **Frontend:** Docusaurus 3, React, TypeScript
+- **Backend:** FastAPI, Python, Qdrant, Gemini API
+- **Auth:** better-auth
+- **Deployment:** Vercel (frontend), Hugging Face Spaces (backend)

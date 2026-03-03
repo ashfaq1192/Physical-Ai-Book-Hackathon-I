@@ -1,10 +1,8 @@
-import { BetterAuth } from 'better-auth';
+import { createAuthClient } from 'better-auth/client';
 
-const auth = new BetterAuth({
-  // Replace with your Better-Auth configuration
-  // For example:
-  // clientId: process.env.NEXT_PUBLIC_BETTER_AUTH_CLIENT_ID,
-  // domain: process.env.NEXT_PUBLIC_BETTER_AUTH_DOMAIN,
+const authClient = createAuthClient({
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:8000',
 });
 
-export default auth;
+export const { signIn, signUp, signOut, useSession } = authClient;
+export default authClient;
