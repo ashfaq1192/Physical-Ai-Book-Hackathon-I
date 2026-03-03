@@ -21,7 +21,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   organizationName: 'ashfaq1192',
-  projectName: 'book-app-frontend',
+  projectName: 'Physical-Ai-Book-Hackathon-I',
 
   onBrokenLinks: 'warn',
 
@@ -40,7 +40,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           editUrl:
-            'https://github.com/ashfaq1192/book-app-frontend/tree/main/book-app/',
+            'https://github.com/ashfaq1192/Physical-Ai-Book-Hackathon-I/tree/main/book-app/',
         },
         blog: false,
         theme: {
@@ -75,7 +75,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://github.com/ashfaq1192/book-app-frontend',
+          href: 'https://github.com/ashfaq1192/Physical-Ai-Book-Hackathon-I',
           label: 'GitHub',
           position: 'right',
         },
@@ -114,7 +114,7 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/ashfaq1192/book-app-frontend',
+              href: 'https://github.com/ashfaq1192/Physical-Ai-Book-Hackathon-I',
             },
           ],
         },

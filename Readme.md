@@ -10,7 +10,7 @@ An AI-native, interactive textbook for the Physical AI & Humanoid Robotics cours
 ## Project Structure
 
 ```
-book-app-frontend/
+Physical-Ai-Book-Hackathon-I/
 ├── book-app/          # Docusaurus textbook (deployed to Vercel)
 │   ├── docs/          # Chapter content (Modules 1–4)
 │   ├── src/           # React components (ChatWidget, signup page)
