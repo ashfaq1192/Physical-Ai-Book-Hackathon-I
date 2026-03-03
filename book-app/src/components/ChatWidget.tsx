@@ -78,7 +78,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = () => {
       const API_BASE_URL =
         typeof window !== 'undefined' && window.location.hostname === 'localhost'
           ? 'http://localhost:8000'
-          : 'https://ashfaq1192-physica-ai-chatbot.hf.space';
+          : 'https://ashfaq1192-physica-ai-chatbot-c3cd96c.hf.space';
 
       const response = await fetch(`${API_BASE_URL}/chat`, {
         method: 'POST',

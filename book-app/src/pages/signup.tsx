@@ -33,13 +33,10 @@ const SignupPage: React.FC = () => {
       localStorage.setItem('user_skill_level', skillLevel);
       localStorage.setItem('user_email', email);
 
-      setMessage('Signup successful! You can now use the personalized chat.');
-      setEmail('');
-      setPassword('');
-      setSkillLevel('Beginner');
-
-      // Optionally redirect to a dashboard or login page
-      // window.location.href = '/docs/intro';
+      setMessage('Account created! Redirecting you to the course…');
+      setTimeout(() => {
+        window.location.href = '/docs/module-1/intro';
+      }, 1200);
 
     } catch (err) {
       console.error('Signup error:', err);

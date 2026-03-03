@@ -105,7 +105,7 @@ def _build_skill_instruction(skill_level: str) -> str:
 
 @app.get("/")
 async def health_check():
-    return {"status": "ok", "service": "Physical AI RAG Chatbot"}
+    return {"status": "ok", "service": "Physical AI RAG Chatbot", "version": "2.0"}
 
 
 @app.post("/chat")
@@ -131,16 +131,10 @@ async def chat(request: ChatRequest):
         context_text = "\n\n".join(context_docs)
     except HTTPException:
         raise
-    except Exception as e:
-        err = str(e)
-        if "Not found" in err or "doesn't exist" in err or "404" in err:
-            # Collection not yet ingested — fall back to general LLM knowledge
-            context_text = ""
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Vector database error: {err}",
-            )
+    except Exception:
+        # Any Qdrant error (network, 404, cluster unavailable, missing collection)
+        # → fall back to general LLM knowledge without RAG context
+        context_text = ""
 
     # 3. Generate answer with LLM
     openai_client = _get_openai_client()

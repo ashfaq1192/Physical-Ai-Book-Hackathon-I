@@ -27,3 +27,4 @@ Thumbs.db
 /rag-backend/.venv/
 rag-backend/.env
 /rag-backend/__pycache__/
+.vercel

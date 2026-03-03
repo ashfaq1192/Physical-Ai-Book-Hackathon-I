@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
           window.location.href = '/docs/module-1/intro';
         }, 1200);
       } else {
-        setError('Invalid email or password. Please sign up first.');
+        setError('No account found for this email on this device. Please sign up first — accounts are saved locally in your browser.');
       }
     } catch {
       setError('Login failed. Please try again.');
