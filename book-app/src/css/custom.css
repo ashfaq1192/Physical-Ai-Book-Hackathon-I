@@ -1,34 +1,192 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Global styles — Physical AI & Humanoid Robotics Textbook
+ * Infima CSS variables + modern book layout overrides
  */
 
-/* You can override the default Infima variables here. */
+/* ── Brand colours ── */
 :root {
-  --ifm-color-primary: #007bff;
-  --ifm-color-primary-dark: #0069d9;
-  --ifm-color-primary-darker: #0062cc;
-  --ifm-color-primary-darkest: #0056b3;
-  --ifm-color-primary-light: #268dff;
-  --ifm-color-primary-lighter: #429aff;
-  --ifm-color-primary-lightest: #66b0ff;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-color-primary: #2563eb;
+  --ifm-color-primary-dark: #1d4ed8;
+  --ifm-color-primary-darker: #1e40af;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #3b82f6;
+  --ifm-color-primary-lighter: #60a5fa;
+  --ifm-color-primary-lightest: #93c5fd;
 
-  /* Custom global styles for better readability */
-  font-family: 'Inter', sans-serif; /* Example font, ensure it's imported or a system font */
-  line-height: 1.6;
+  --ifm-code-font-size: 93%;
+  --docusaurus-highlighted-code-line-bg: rgba(37, 99, 235, 0.08);
+
+  /* Typography */
+  --ifm-font-family-base: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --ifm-font-size-base: 1.0625rem;
+  --ifm-line-height-base: 1.75;
+  --ifm-heading-font-weight: 700;
+
+  /* Spacing */
+  --ifm-leading: 1.75rem;
+  --ifm-paragraph-margin-bottom: 1.25rem;
+
+  /* Sidebar */
+  --doc-sidebar-width: 280px;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #66b0ff;
-  --ifm-color-primary-dark: #429aff;
-  --ifm-color-primary-darker: #268dff;
-  --ifm-color-primary-darkest: #007bff;
-  --ifm-color-primary-light: #85c2ff;
-  --ifm-color-primary-lighter: #9fd1ff;
-  --ifm-color-primary-lightest: #c0e0ff;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #60a5fa;
+  --ifm-color-primary-dark: #3b82f6;
+  --ifm-color-primary-darker: #2563eb;
+  --ifm-color-primary-darkest: #1d4ed8;
+  --ifm-color-primary-light: #93c5fd;
+  --ifm-color-primary-lighter: #bfdbfe;
+  --ifm-color-primary-lightest: #dbeafe;
+  --docusaurus-highlighted-code-line-bg: rgba(96, 165, 250, 0.12);
+}
+
+/* ── Global body ── */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Article / Doc content ── */
+.markdown {
+  --ifm-h1-font-size: 2.25rem;
+  --ifm-h2-font-size: 1.625rem;
+  --ifm-h3-font-size: 1.25rem;
+}
+
+.markdown h1 {
+  border-bottom: 2px solid var(--ifm-color-emphasis-200);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.markdown h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.markdown h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Comfortable paragraph spacing */
+.markdown p {
+  margin-bottom: var(--ifm-paragraph-margin-bottom);
+}
+
+/* Better blockquotes */
+.markdown blockquote {
+  border-left: 4px solid var(--ifm-color-primary);
+  background: var(--ifm-color-emphasis-100);
+  border-radius: 0 6px 6px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  font-style: normal;
+}
+
+.markdown blockquote p {
+  margin: 0;
+}
+
+/* Inline code */
+.markdown code:not([class*='language-']) {
+  background-color: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.88em;
+}
+
+/* Code blocks */
+.markdown pre {
+  border-radius: 8px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+}
+
+/* ── Table styling ── */
+.markdown table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5rem 0;
+  font-size: 0.9375rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.markdown table thead th {
+  background-color: var(--ifm-color-emphasis-100);
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.markdown table tbody td {
+  padding: 0.625rem 1rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.markdown table tbody tr:hover {
+  background-color: var(--ifm-color-emphasis-100);
+}
+
+/* ── Navbar ── */
+.navbar {
+  box-shadow: 0 1px 0 var(--ifm-color-emphasis-200);
+}
+
+.navbar__title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* ── Sidebar ── */
+.menu__link {
+  border-radius: 6px;
+  font-size: 0.9375rem;
+}
+
+.menu__link--active {
+  font-weight: 600;
+}
+
+/* ── Admonitions (notes, warnings) ── */
+.admonition {
+  border-radius: 8px;
+  border-left-width: 4px;
+}
+
+/* ── TOC (table of contents) ── */
+.table-of-contents__link {
+  font-size: 0.875rem;
+}
+
+.table-of-contents__link--active {
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+}
+
+/* ── Footer ── */
+.footer {
+  font-size: 0.9rem;
+}
+
+/* ── Breadcrumbs ── */
+.breadcrumbs__link {
+  font-size: 0.875rem;
+}
+
+/* ── Pagination ── */
+.pagination-nav__label {
+  font-size: 0.875rem;
+}
+
+/* ── Responsive reading width ── */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1200px;
+  }
 }

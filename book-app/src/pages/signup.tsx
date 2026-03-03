@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
-import auth from '../../lib/auth-client'; // Adjust path as necessary
+import Link from '@docusaurus/Link';
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -47,48 +47,72 @@ const SignupPage: React.FC = () => {
     }
   };
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '0.75rem 1rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    boxSizing: 'border-box',
+    fontSize: '0.9375rem',
+    outline: 'none',
+  };
+
   return (
     <Layout title="Sign Up" description="Sign up for an account">
-      <main style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
+      <main style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '75vh', padding: '2rem' }}>
         <div style={{
-          backgroundColor: 'white',
-          padding: '2rem',
-          borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-          maxWidth: '400px',
+          backgroundColor: 'var(--ifm-background-color, #fff)',
+          padding: '2.5rem',
+          borderRadius: '12px',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.10)',
+          maxWidth: '420px',
           width: '100%',
+          border: '1px solid #e5e7eb',
         }}>
-          <h1 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#333' }}>Sign Up</h1>
-          <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {
-              error && (
-                <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
-              )
-            }
-            {
-              message && (
-                <p style={{ color: 'green', textAlign: 'center' }}>{message}</p>
-              )
-            }
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🚀</div>
+            <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700 }}>Create Account</h1>
+            <p style={{ color: '#6b7280', marginTop: '0.4rem', marginBottom: 0, fontSize: '0.9375rem' }}>
+              Start your Physical AI learning journey
+            </p>
+          </div>
+
+          {/* Alert messages */}
+          {error && (
+            <div style={{
+              backgroundColor: '#fef2f2', color: '#dc2626',
+              padding: '0.75rem 1rem', borderRadius: '6px',
+              border: '1px solid #fecaca', fontSize: '0.875rem', marginBottom: '1rem',
+            }}>
+              {error}
+            </div>
+          )}
+          {message && (
+            <div style={{
+              backgroundColor: '#f0fdf4', color: '#16a34a',
+              padding: '0.75rem 1rem', borderRadius: '6px',
+              border: '1px solid #bbf7d0', fontSize: '0.875rem', marginBottom: '1rem',
+            }}>
+              {message}
+            </div>
+          )}
+
+          <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
-              <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#555' }}>Email:</label>
+              <label htmlFor="email" style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.875rem' }}>Email Address</label>
               <input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  boxSizing: 'border-box',
-                }}
+                placeholder="you@example.com"
+                style={inputStyle}
               />
             </div>
             <div>
-              <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#555' }}>Password:</label>
+              <label htmlFor="password" style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.875rem' }}>Password</label>
               <input
                 type="password"
                 id="password"
@@ -96,54 +120,54 @@ const SignupPage: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  boxSizing: 'border-box',
-                }}
+                placeholder="At least 6 characters"
+                style={inputStyle}
               />
             </div>
             <div>
-              <label htmlFor="skillLevel" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#555' }}>Skill Level:</label>
+              <label htmlFor="skillLevel" style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.875rem' }}>Your Skill Level</label>
               <select
                 id="skillLevel"
                 value={skillLevel}
                 onChange={(e) => setSkillLevel(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  boxSizing: 'border-box',
-                  backgroundColor: 'white',
-                }}
+                style={{ ...inputStyle, backgroundColor: 'var(--ifm-background-color, white)' }}
               >
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
+                <option value="Beginner">🟢 Beginner — New to robotics &amp; AI</option>
+                <option value="Intermediate">🟡 Intermediate — Some ROS / ML experience</option>
+                <option value="Advanced">🔴 Advanced — Expert in robotics &amp; deep learning</option>
               </select>
+              <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', marginBottom: 0 }}>
+                The AI tutor adapts its explanations to your level.
+              </p>
             </div>
             <button
               type="submit"
               style={{
                 backgroundColor: '#2563eb',
                 color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '4px',
+                padding: '0.875rem',
+                borderRadius: '6px',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '1rem',
-                fontWeight: '500',
+                fontSize: '0.9375rem',
+                fontWeight: 600,
                 transition: 'background-color 0.2s',
+                marginTop: '0.25rem',
               }}
-              onMouseOver={e => e.currentTarget.style.backgroundColor = '#1e40af'}
+              onMouseOver={e => e.currentTarget.style.backgroundColor = '#1d4ed8'}
               onMouseOut={e => e.currentTarget.style.backgroundColor = '#2563eb'}
             >
-              Sign Up
+              Create Account
             </button>
           </form>
+
+          {/* Footer link */}
+          <p style={{ textAlign: 'center', marginTop: '1.75rem', marginBottom: 0, color: '#6b7280', fontSize: '0.875rem' }}>
+            Already have an account?{' '}
+            <Link to="/login" style={{ color: '#2563eb', fontWeight: 600 }}>
+              Sign in →
+            </Link>
+          </p>
         </div>
       </main>
     </Layout>

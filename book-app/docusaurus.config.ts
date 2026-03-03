@@ -70,6 +70,11 @@ const config: Config = {
           label: 'Textbook',
         },
         {
+          to: '/login',
+          label: 'Login',
+          position: 'right',
+        },
+        {
           to: '/signup',
           label: 'Sign Up',
           position: 'right',

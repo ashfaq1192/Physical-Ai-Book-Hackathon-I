@@ -75,20 +75,30 @@ async def get_embeddings(text: str) -> list[float]:
 def _build_skill_instruction(skill_level: str) -> str:
     if skill_level == "Beginner":
         return (
-            "Explain concepts in simple, clear language. Avoid jargon; "
-            "define every technical term. Use step-by-step explanations and analogies."
+            "The student is new to robotics and AI. "
+            "Explain concepts in simple, friendly language — avoid unexplained jargon. "
+            "Define every technical term when first used. "
+            "Use step-by-step explanations, everyday analogies, and concrete examples. "
+            "Focus on the 'what' and 'why' before the 'how'. "
+            "Keep code examples minimal and well-commented."
         )
     elif skill_level == "Intermediate":
         return (
-            "Explain with moderate technical detail. Use standard terminology but "
-            "clarify less-common terms. Provide practical examples and code snippets where helpful."
+            "The student has some programming and robotics background. "
+            "Explain with moderate technical depth, using standard ROS 2 / AI terminology. "
+            "Briefly clarify non-obvious terms. "
+            "Include practical examples, relevant CLI commands, and code snippets where helpful. "
+            "Connect theory to real-world robotics applications and workflows."
         )
     elif skill_level == "Advanced":
         return (
-            "Assume deep familiarity with robotics and AI. Use precise technical language, "
-            "focus on implementation nuances, trade-offs, and cutting-edge research."
+            "The student has deep expertise in robotics, ROS 2, and machine learning. "
+            "Use precise technical language — skip basic definitions. "
+            "Focus on implementation trade-offs, architectural decisions, performance considerations, "
+            "and cutting-edge research insights. "
+            "Discuss specific API details, design patterns, and production-level considerations."
         )
-    return "Explain clearly and concisely."
+    return "Explain clearly and concisely with examples."
 
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
@@ -135,20 +145,47 @@ async def chat(request: ChatRequest):
     # 3. Generate answer with LLM
     openai_client = _get_openai_client()
     try:
+        COURSE_CONTEXT = (
+            "You are an expert AI tutor for the Physical AI & Humanoid Robotics course at Panaversity. "
+            "The course covers four modules: "
+            "(1) ROS 2 — nodes, topics, services, actions, and robot communication; "
+            "(2) Digital Twin — Gazebo and Unity simulation for robot testing; "
+            "(3) NVIDIA Isaac Sim — synthetic data generation and reinforcement learning; "
+            "(4) Vision-Language-Action (VLA) models — frontier AI models for autonomous humanoid robots."
+        )
+
+        FORMATTING_RULES = (
+            "FORMATTING RULES:\n"
+            "- Use markdown: bold (**term**) for key concepts, `code` for commands/code, "
+            "  ## headers to structure long answers.\n"
+            "- For code examples, use fenced code blocks with the language tag (e.g. ```python).\n"
+            "- Bullet points for lists; keep paragraphs short and scannable.\n"
+            "- End with a one-sentence practical takeaway or next step when helpful."
+        )
+
         if context_text:
             system_msg = (
-                f"You are an expert teacher for a Physical AI & Humanoid Robotics course. "
-                f"{skill_instruction} "
-                "Answer the user's question using ONLY the provided textbook context. "
-                "If the answer is not in the context, say so honestly."
+                f"{COURSE_CONTEXT}\n\n"
+                f"TEACHING STYLE: {skill_instruction}\n\n"
+                f"{FORMATTING_RULES}\n\n"
+                "GROUNDING RULE: Answer the student's question using ONLY the provided textbook excerpt below. "
+                "If the excerpt does not contain enough information, say: "
+                "'This specific detail isn't in the current chapter. "
+                "Based on my general knowledge: …' and then answer from general knowledge."
             )
-            user_msg = f"Context:\n{context_text}\n\nQuestion: {request.message}"
+            user_msg = (
+                f"## Textbook Excerpt\n\n{context_text}\n\n"
+                f"---\n\n"
+                f"## Student Question\n\n{request.message}"
+            )
         else:
             system_msg = (
-                f"You are an expert teacher for a Physical AI & Humanoid Robotics course. "
-                f"{skill_instruction} "
-                "Welcome the student and answer their question based on your general knowledge "
-                "of robotics, ROS 2, NVIDIA Isaac, and AI."
+                f"{COURSE_CONTEXT}\n\n"
+                f"TEACHING STYLE: {skill_instruction}\n\n"
+                f"{FORMATTING_RULES}\n\n"
+                "GROUNDING RULE: No textbook context is available for this query. "
+                "Answer from your expert knowledge of robotics, ROS 2, NVIDIA Isaac Sim, and AI. "
+                "Be accurate, pedagogically clear, and encourage the student."
             )
             user_msg = request.message
 
