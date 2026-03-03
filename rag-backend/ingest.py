@@ -31,15 +31,14 @@ openai_client = AsyncOpenAI(
 qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
 COLLECTION_NAME = "docusaurus_docs"
-VECTOR_SIZE = 768  # text-embedding-004 with dimensions=768
+VECTOR_SIZE = 3072  # gemini-embedding-001 default output dimension
 
 
 async def get_embedding(text: str) -> list[float]:
-    """Generate a 768-dimensional embedding for text."""
+    """Generate a 3072-dimensional embedding for text."""
     response = await openai_client.embeddings.create(
-        model="text-embedding-004",
+        model="models/gemini-embedding-001",
         input=text,
-        dimensions=VECTOR_SIZE,
     )
     return response.data[0].embedding
 

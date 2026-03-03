@@ -61,9 +61,8 @@ async def get_embeddings(text: str) -> list[float]:
     client = _get_openai_client()
     try:
         response = await client.embeddings.create(
-            model="text-embedding-004",
+            model="models/gemini-embedding-001",
             input=text,
-            dimensions=768,
         )
         return response.data[0].embedding
     except Exception as e:
@@ -106,27 +105,32 @@ async def chat(request: ChatRequest):
     # 1. Generate query embedding
     query_embedding = await get_embeddings(request.message)
 
-    # 2. Search Qdrant for relevant context
+    # 2. Search Qdrant for relevant context (graceful fallback if collection missing)
     context_text = ""
     try:
         qdrant = _get_qdrant_client()
         search_result = await run_in_threadpool(
-            qdrant.search,
+            qdrant.query_points,
             collection_name=COLLECTION_NAME,
-            query_vector=query_embedding,
+            query=query_embedding,
             limit=3,
         )
         context_docs = [
-            hit.payload["text"] for hit in search_result if hit.payload and "text" in hit.payload
+            hit.payload["text"] for hit in search_result.points if hit.payload and "text" in hit.payload
         ]
         context_text = "\n\n".join(context_docs)
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Vector database error: {str(e)}",
-        )
+        err = str(e)
+        if "Not found" in err or "doesn't exist" in err or "404" in err:
+            # Collection not yet ingested — fall back to general LLM knowledge
+            context_text = ""
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Vector database error: {err}",
+            )
 
     # 3. Generate answer with LLM
     openai_client = _get_openai_client()
@@ -149,7 +153,7 @@ async def chat(request: ChatRequest):
             user_msg = request.message
 
         response = await openai_client.chat.completions.create(
-            model="gemini-2.0-flash",
+            model="models/gemini-2.5-flash-lite",
             messages=[
                 {"role": "system", "content": system_msg},
                 {"role": "user", "content": user_msg},
